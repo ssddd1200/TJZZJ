@@ -1,5 +1,6 @@
 package com.yjs.server;
 
+import com.yjs.utils.INIUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -22,14 +23,15 @@ public class PrinterServer {
     Logger logger = LoggerFactory.getLogger(PrinterServer.class);
 
     public void printPDF(InputStream is){
+        String printerName = INIUtils.getValue("printer", "name");
         PDDocument document = null;
         try {
             document = PDDocument.load(is);
             PrinterJob printerJob = PrinterJob.getPrinterJob();
 
-            PrintService printService = findPrintService("\\\\192.168.46.208\\HP LaserJet M1005");
+            PrintService printService = findPrintService(printerName);
             if(printService==null){
-                logger.info("打印失败，未找到名称为HP LaserJet M1005的打印机，请检查。");
+                logger.info("打印失败，未找到名称为"+printerName+"的打印机，请检查。");
                 return;
             }else{
                 printerJob.setPrintService(printService);
